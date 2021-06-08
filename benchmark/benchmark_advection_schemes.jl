@@ -15,7 +15,7 @@ function benchmark_advection_scheme(Arch, Scheme)
     trial = @benchmark begin
         @sync_gpu time_step!($model, 1)
     end samples=10
-    
+
     return trial
 end
 

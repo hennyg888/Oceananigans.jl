@@ -8,6 +8,38 @@ using Oceananigans.Fields
 using Oceananigans.Utils
 using Oceananigans.TurbulenceClosures: AbstractTurbulenceClosure, time_discretization
 
+using Oceananigans.Advection:
+    advective_momentum_flux_Uu,
+    advective_momentum_flux_Uv,
+    advective_momentum_flux_Uw,
+    advective_momentum_flux_Vu,
+    advective_momentum_flux_Vv,
+    advective_momentum_flux_Vw,
+    advective_momentum_flux_Wu,
+    advective_momentum_flux_Wv,
+    advective_momentum_flux_Ww,
+    advective_tracer_flux_x,
+    advective_tracer_flux_y,
+    advective_tracer_flux_z
+
+import Oceananigans.Coriolis: φᶠᶠᵃ
+
+import Oceananigans.Grids: with_halo, xnode, ynode, znode
+
+import Oceananigans.Advection:
+    _advective_momentum_flux_Uu,
+    _advective_momentum_flux_Uv,
+    _advective_momentum_flux_Uw,
+    _advective_momentum_flux_Vu,
+    _advective_momentum_flux_Vv,
+    _advective_momentum_flux_Vw,
+    _advective_momentum_flux_Wu,
+    _advective_momentum_flux_Wv,
+    _advective_momentum_flux_Ww,
+    _advective_tracer_flux_x,
+    _advective_tracer_flux_y,
+    _advective_tracer_flux_z
+
 import Oceananigans.TurbulenceClosures:
     viscous_flux_ux,
     viscous_flux_uy,
@@ -38,7 +70,6 @@ struct ImmersedBoundaryGrid{FT, TX, TY, TZ, G, I} <: AbstractGrid{FT, TX, TY, TZ
     immersed_boundary :: I
 
     function ImmersedBoundaryGrid(grid::G, ib::I) where {G <: AbstractGrid, I}
-        
         @warn "ImmersedBoundaryGrid is unvalidated and may produce incorrect results. \n" *
               "Don't hesitate to help validate ImmersedBoundaryGrid by reporting any bugs \n" *
               "or unexpected behavior to https://github.com/CliMA/Oceananigans.jl/issues"
@@ -57,6 +88,14 @@ const IBG = ImmersedBoundaryGrid
 @inline get_ibg_property(ibg::IBG, ::Val{:grid}) = getfield(ibg, :grid)
 
 Adapt.adapt_structure(to, ibg::IBG) = ImmersedBoundaryGrid(adapt(to, ibg.grid), adapt(to, ibg.immersed_boundary))
+
+with_halo(halo, ibg::ImmersedBoundaryGrid) = ImmersedBoundaryGrid(with_halo(halo, ibg.grid), ibg.immersed_boundary)
+
+@inline φᶠᶠᵃ(i, j, k, ibg::ImmersedBoundaryGrid) = φᶠᶠᵃ(i, j, k, ibg.grid)
+
+@inline xnode(LX, LY, LZ, i, j, k, ibg::ImmersedBoundaryGrid) = xnode(LX, LY, LZ, i, j, k, ibg.grid)
+@inline ynode(LX, LY, LZ, i, j, k, ibg::ImmersedBoundaryGrid) = ynode(LX, LY, LZ, i, j, k, ibg.grid)
+@inline znode(LX, LY, LZ, i, j, k, ibg::ImmersedBoundaryGrid) = znode(LX, LY, LZ, i, j, k, ibg.grid)
 
 include("immersed_grid_metrics.jl")
 include("grid_fitted_immersed_boundary.jl")

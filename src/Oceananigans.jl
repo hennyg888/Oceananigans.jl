@@ -57,7 +57,10 @@ export
     LagrangianParticles,
 
     # Models
-    IncompressibleModel, NonDimensionalIncompressibleModel, HydrostaticFreeSurfaceModel, fields,
+    IncompressibleModel, NonDimensionalIncompressibleModel,
+    HydrostaticFreeSurfaceModel,
+    ShallowWaterModel,
+    fields,
 
     # Hydrostatic free surface model stuff
     VectorInvariant, ExplicitFreeSurface, ImplicitFreeSurface,
@@ -153,6 +156,7 @@ function short_show end
 
 function fields end
 function prognostic_fields end
+function tracer_tendency_kernel_function end
 
 #####
 ##### Include all the submodules
@@ -178,6 +182,7 @@ include("StokesDrift.jl")
 include("TurbulenceClosures/TurbulenceClosures.jl")
 include("LagrangianParticleTracking/LagrangianParticleTracking.jl")
 include("Forcings/Forcings.jl")
+
 include("ImmersedBoundaries/ImmersedBoundaries.jl")
 include("TimeSteppers/TimeSteppers.jl")
 include("Models/Models.jl")
